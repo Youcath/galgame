@@ -1,13 +1,11 @@
 import { _decorator, Component, director, Node } from 'cc';
-import { GameData } from './GameData';
+import DataManager from '../runtime/DataManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('GameMenu')
 export class GameMenu extends Component {
-    @property(Node) gameDataNode: Node;
-
     start() {
-        director.addPersistRootNode(this.gameDataNode);
+
     }
 
     update(deltaTime: number) {
@@ -15,14 +13,14 @@ export class GameMenu extends Component {
     }
 
     startGame() {
-        const gameData = this.gameDataNode.getComponent(GameData);
+        const gameData = DataManager.Instance;
         gameData.init();
         director.loadScene("main")
     }
 
     resumeGame() {
-        const gameData = this.gameDataNode.getComponent(GameData);
-        if (gameData.roleData == null) {
+        const gameData = DataManager.Instance;
+        if (gameData.stageInfo == null) {
             gameData.init();
         }
         director.loadScene("main")
