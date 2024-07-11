@@ -1,7 +1,6 @@
 import Singleton from "../base/Singleton";
-import StageInfo, { NpcInfo } from "../data";
-
-export type IRecord = StageInfo;
+import { GameInfo, StageInfo } from "../data";
+import { DataHelper } from "../helpers/DataHelper";
 
 /**
  * 全局数据管理类
@@ -11,24 +10,14 @@ export default class DataManager extends Singleton {
       return super.GetInstance<DataManager>()
     }
 
-    stageInfo: StageInfo;
-    records: IRecord[]; //撤回数据
+    gameInfo: GameInfo;
+
 
     init() {
-        this.stageInfo = {
-            player: {
-                goodness: 0,
-                hp: 10,
-                money: 10
-            },
-            npcs: [{
-                goodwill: 0
-            }]
-        };
+        this.gameInfo = DataHelper.makeBeginningGame();
     }
 
     reset() {
-        this.stageInfo = null;
-        this.records = [];
+        this.gameInfo = null;
     }
 }

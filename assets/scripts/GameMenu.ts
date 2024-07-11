@@ -20,7 +20,7 @@ export class GameMenu extends Component {
 
     resumeGame() {
         const gameData = DataManager.Instance;
-        if (gameData.stageInfo == null) {
+        if (gameData.gameInfo == null) {
             gameData.init();
         }
         director.loadScene("main")
