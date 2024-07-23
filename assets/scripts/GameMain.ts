@@ -1,4 +1,4 @@
-import { _decorator, Component, director, find, Label, math, Node, Sprite } from 'cc';
+import { _decorator, Component, director, EventTouch, find, Input, input, Label, math, Node, Prefab, RichText, Sprite } from 'cc';
 import EventManager from '../runtime/EventManager';
 import DataManager from '../runtime/DataManager';
 import { EVENT_ENUM } from '../enum';
@@ -15,21 +15,18 @@ export class GameMain extends Component {
     @property(Node) infoNode: Node;
     @property(Node) dialogNode: Node;
     @property(Node) dayNode: Node;
-    @property(Node) button1Node: Node;
-    @property(Node) button2Node: Node;
-    @property(Node) button3Node: Node;
-    @property(Node) button4Node: Node;
-    @property(Node) button5Node: Node;
-    @property(Node) button6Node: Node;
+    @property(Prefab) selectionPrefab: Prefab;
 
     onLoad(): void {
         EventManager.Instance.on(EVENT_ENUM.SHOW_PLAYER, this.showPlayerUI, this);
         EventManager.Instance.on(EVENT_ENUM.SHOW_NPC, this.showNpcUI, this);
         EventManager.Instance.on(EVENT_ENUM.UPDATE_DAY, this.updateDay, this);
+        EventManager.Instance.on(EVENT_ENUM.SHOW_INFORMATION, this.showInformation, this);
     }
 
     start() {
         this.makeStage();
+        input.on(Input.EventType.TOUCH_START, this.onTouch, this);
     }
 
     makeStage() {
@@ -67,7 +64,7 @@ export class GameMain extends Component {
             b = 0;
             g = 255 - 255 * goodness / 100;
         }
-        let color = new math.Color(255, r, g, b);
+        let color = new math.Color(r, g, b);
         this.playerUiNode.getChildByName('Goodness').getChildByName('splash').getComponent(Sprite).color = color;
     }
 
@@ -99,8 +96,21 @@ export class GameMain extends Component {
         this.playerUiNode.getChildByName('Goodwill').getChildByName('splash').getComponent(Sprite).color = color;
     }
 
+    showInformation(info: string) {
+        let label = this.infoNode.getChildByName('Label');
+        let richText = label.getComponent(RichText);
+        richText.string = info;
+    }
+
     updateDay(day: number) {
         this.dayNode.getComponent(Label).string = `Day ${day}`;
+    }
+
+    onTouch(event: EventTouch) {
+        let records = DataManager.Instance.gameInfo.records;
+        if (records.length > 0) {
+            StageManager.performClick(records[records.length - 1]);
+        }
     }
 }
 

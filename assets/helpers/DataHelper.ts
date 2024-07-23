@@ -25,7 +25,7 @@ export class DataHelper {
     static makeMainEvent(): GameEventInfo {
         return {
             eventType: EventType.HOME,
-            textInfo: ["今天做些什么呢"],
+            textInfo: ["今天做些什么呢......."],
             npc: null
         };
     }
