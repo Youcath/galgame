@@ -1,4 +1,4 @@
-import { _decorator, Component, director, EventTouch, find, Input, input, Label, math, Node, Prefab, RichText, Sprite } from 'cc';
+import { _decorator, Button, Component, director, EventTouch, find, Input, input, instantiate, Label, math, Node, Prefab, RichText, Sprite } from 'cc';
 import EventManager from '../runtime/EventManager';
 import DataManager from '../runtime/DataManager';
 import { EVENT_ENUM } from '../enum';
@@ -15,6 +15,7 @@ export class GameMain extends Component {
     @property(Node) infoNode: Node;
     @property(Node) dialogNode: Node;
     @property(Node) dayNode: Node;
+    @property(Node) buttonContainer: Node;
     @property(Prefab) selectionPrefab: Prefab;
 
     onLoad(): void {
@@ -22,6 +23,12 @@ export class GameMain extends Component {
         EventManager.Instance.on(EVENT_ENUM.SHOW_NPC, this.showNpcUI, this);
         EventManager.Instance.on(EVENT_ENUM.UPDATE_DAY, this.updateDay, this);
         EventManager.Instance.on(EVENT_ENUM.SHOW_INFORMATION, this.showInformation, this);
+        EventManager.Instance.on(EVENT_ENUM.SWITCH_STAGE, this.makeStage, this);
+        EventManager.Instance.on(EVENT_ENUM.CLEAR_BUTTONS, this.clearButtons, this);
+        EventManager.Instance.on(EVENT_ENUM.BIND_BUTTON, this.bindButton, this);
+        EventManager.Instance.on(EVENT_ENUM.SHOW_DIALOG, this.showDialog, this);
+        EventManager.Instance.on(EVENT_ENUM.DISMISS_DIALOG, this.dismissDialog, this);
+        EventManager.Instance.on(EVENT_ENUM.GAME_OVER, this.gameOver, this);
     }
 
     start() {
@@ -30,6 +37,7 @@ export class GameMain extends Component {
     }
 
     makeStage() {
+        this.dismissDialog();
         let records = DataManager.Instance.gameInfo.records;
         if (records.length > 0) {
             StageManager.makeStage(records[records.length - 1]);
@@ -38,6 +46,12 @@ export class GameMain extends Component {
 
     backHome() {
         director.loadScene("menu");
+    }
+
+    rollbackToYesterday() {
+        console.log("ytyt rollback To Yesterday!");
+        DataManager.Instance.rollbackRecord();
+        this.makeStage();
     }
 
     showPlayerUI() {
@@ -107,10 +121,74 @@ export class GameMain extends Component {
     }
 
     onTouch(event: EventTouch) {
+        // if (this.dialogNode.active == true) {
+        //     this.dialogNode.active = false;
+        //     return;
+        // }
         let records = DataManager.Instance.gameInfo.records;
         if (records.length > 0) {
             StageManager.performClick(records[records.length - 1]);
         }
+    }
+
+    clearButtons() {
+        this.buttonContainer.destroyAllChildren();
+    }
+
+    bindButton(text: string, callback: (Button) => void, target?: any) {
+        let selectionNode = instantiate(this.selectionPrefab);
+        selectionNode.on(Button.EventType.CLICK, callback, target);
+
+        let label = selectionNode.getChildByName('Label').getComponent(Label);
+        label.string = text;
+
+        this.buttonContainer.addChild(selectionNode);
+    }
+
+    showDialog(text: string, target?: any, button1?: string, callback1?: (Button?) => void, button2?: string, callback2?: (Button?) => void) {
+        if (text && text.length > 0) {
+            this.dialogNode.active = true;
+
+            this.dialogNode.getChildByName('Label').getComponent(RichText).string = text;
+
+            let button1Node = this.dialogNode.getChildByName('Button1');
+            let button2Node = this.dialogNode.getChildByName('Button2');
+            button1Node.active = false;
+            button2Node.active = false;
+
+            if (button1 && button1.length > 0) {
+                // 有右下角第一个按钮
+                button1Node.active = true;
+                if (callback1) {
+                    button1Node.once(Button.EventType.CLICK, callback1, target);
+                } else {
+                    button1Node.once(Button.EventType.CLICK, this.onTouch, this);
+                }
+
+                let label = button1Node.getChildByName('Label').getComponent(Label);
+                label.string = button1;
+            }
+            if (button2 && button2.length > 0) {
+                // 有左下角第二个按钮
+                button2Node.active = true;
+                if (callback2) {
+                    button2Node.once(Button.EventType.CLICK, callback2, target);
+                } else {
+                    button2Node.once(Button.EventType.CLICK, this.onTouch, this);
+                }
+
+                let label = button2Node.getChildByName('Label').getComponent(Label);
+                label.string = button2;
+            }
+        }
+    }
+
+    dismissDialog() {
+        this.dialogNode.active = false;
+    }
+
+    gameOver() {
+        this.showDialog("你倒在路边，再也没有站起来。", this, "领盒饭", this.backHome);
     }
 }
 

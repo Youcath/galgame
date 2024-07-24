@@ -14,13 +14,16 @@ export class NpcInfo {
 export interface GameEventInfo {
     eventType: EventType;
     npc: NpcInfo;
-    textInfo: Array<string>;
+    textInfo: Array<string>;   // 场景介绍的文案
+    finalText: Array<string>; // 用于展示场景的结果
 }
 
 // 场景信息，以天/回合为单位，作为可以回退的基本单位
 // 有确定的事件信息
 export interface StageInfo {
     index: number;  // 第几天，从1开始
+    player: PlayerInfo; // 这天开始时的玩家数据
+    npcs: Array<NpcInfo>; // 这天开始时的NPC数据
     events: GameEventInfo[];
 }
 
@@ -29,7 +32,7 @@ export enum EventType {
     HOME = "home",   // 基本界面，一天选择的开始
 
     WORKING = "work",    // 打工事件
-    HANGING = "hang",    // 闲逛事件，准备随机遭遇
+    HANGOUT = "hangout",    // 闲逛事件，准备随机遭遇
 
     PICK_MONEY = "pickMoney",  // 捡钱事件
     SICK = "sick",  // 生病事件
