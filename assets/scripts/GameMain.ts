@@ -21,6 +21,8 @@ export class GameMain extends Component {
     onLoad(): void {
         EventManager.Instance.on(EVENT_ENUM.SHOW_PLAYER, this.showPlayerUI, this);
         EventManager.Instance.on(EVENT_ENUM.SHOW_NPC, this.showNpcUI, this);
+        EventManager.Instance.on(EVENT_ENUM.COMPARE_GOODNESS, this.compareGoodness, this);
+        EventManager.Instance.on(EVENT_ENUM.COMPARE_GOODWILL, this.compareGoodwill, this);
         EventManager.Instance.on(EVENT_ENUM.UPDATE_DAY, this.updateDay, this);
         EventManager.Instance.on(EVENT_ENUM.SHOW_INFORMATION, this.showInformation, this);
         EventManager.Instance.on(EVENT_ENUM.SWITCH_STAGE, this.makeStage, this);
@@ -68,19 +70,45 @@ export class GameMain extends Component {
         let g = 255;
         let b = 0;
 
-        if (goodness > 0) {
-            // 善恶值上升，从绿色往蓝色变化
-            b = 255 * goodness / 100;
-            r = 0;
-            g = 255 - 255 * goodness / 100;
-        } else {
-            // 善恶值下降，从绿色往红色变化
-            r = 255 * goodness / 100;
-            b = 0;
-            g = 255 - 255 * goodness / 100;
-        }
+        // 善恶值上升，从绿色往蓝色变化
+        // 善恶值下降，从绿色往红色变化
+        r = Math.round(255 * goodness / 100);
+        b = 0;
+        g = Math.round(255 - 255 * goodness / 100);
+
         let color = new math.Color(r, g, b);
         this.playerUiNode.getChildByName('Goodness').getChildByName('splash').getComponent(Sprite).color = color;
+
+        const valueNode = this.playerUiNode.getChildByName('Goodness').getChildByName('value');
+        valueNode.active = false;
+    }
+
+    // 比较一下善恶值的变化程度，并提示
+    compareGoodness() {
+        const days = DataManager.Instance.gameInfo.records.length;
+        const valueNode = this.playerUiNode.getChildByName('Goodness').getChildByName('value');
+        valueNode.active = false;
+        if (days > 1) {
+            const before = DataManager.Instance.gameInfo.records[days - 1].player.goodness;
+            const current = DataManager.Instance.gameInfo.player.goodness;
+
+            valueNode.active = true;
+            if (current - before > 10) {
+                // 大幅提升
+                valueNode.getComponent(Label).string = '↑↑';
+            } else if (current - before > 3) {
+                // 小幅提升
+                valueNode.getComponent(Label).string = '↑';
+            } else if (current - before < -10) {
+                // 大幅下降
+                valueNode.getComponent(Label).string = '↓↓';
+            } else if (current - before < -3) {
+                // 小幅下降
+                valueNode.getComponent(Label).string = '↓';
+            } else {
+                valueNode.active = false;
+            }
+        }
     }
 
     showNpcUI(npc: NpcInfo) {
@@ -88,7 +116,7 @@ export class GameMain extends Component {
         this.npcUiNode.active = true;
         this.roleNode.active = true;
 
-        this.playerUiNode.getChildByName('Name').getComponent(Label).string = npc.name;
+        this.npcUiNode.getChildByName('Name').getComponent(Label).string = npc.name;
 
         let color = math.Color.WHITE;
         if (npc.goodwill < -20) {
@@ -108,7 +136,46 @@ export class GameMain extends Component {
             color = math.Color.RED;
         }
 
-        this.playerUiNode.getChildByName('Goodwill').getChildByName('splash').getComponent(Sprite).color = color;
+        this.npcUiNode.getChildByName('Goodwill').getChildByName('splash').getComponent(Sprite).color = color;
+    }
+
+    // 比较一下好感度的变化程度，并提示
+    compareGoodwill(name: string) {
+        const days = DataManager.Instance.gameInfo.records.length;
+        const valueNode = this.npcUiNode.getChildByName('Goodwill').getChildByName('value');
+        valueNode.active = false;
+        if (days > 1) {
+
+            let before = 0;
+            DataManager.Instance.gameInfo.records[days - 1].npcs.forEach(v => {
+                if (v.name == name) {
+                    before = v.goodwill;
+                }
+            });
+            let current = 0;
+            DataManager.Instance.gameInfo.npcs.forEach(v => {
+                if (v.name == name) {
+                    current = v.goodwill;
+                }
+            });
+
+            valueNode.active = true;
+            if (current - before > 10) {
+                // 大幅提升
+                valueNode.getComponent(Label).string = '↑↑';
+            } else if (current - before > 3) {
+                // 小幅提升
+                valueNode.getComponent(Label).string = '↑';
+            } else if (current - before < -10) {
+                // 大幅下降
+                valueNode.getComponent(Label).string = '↓↓';
+            } else if (current - before < -3) {
+                // 小幅下降
+                valueNode.getComponent(Label).string = '↓';
+            } else {
+                valueNode.active = false;
+            }
+        }
     }
 
     showInformation(info: string) {
@@ -162,8 +229,6 @@ export class GameMain extends Component {
                 button1Node.active = true;
                 if (callback1) {
                     button1Node.once(Button.EventType.CLICK, callback1, target);
-                } else {
-                    button1Node.once(Button.EventType.CLICK, this.onTouch, this);
                 }
 
                 let label = button1Node.getChildByName('Label').getComponent(Label);
@@ -174,8 +239,6 @@ export class GameMain extends Component {
                 button2Node.active = true;
                 if (callback2) {
                     button2Node.once(Button.EventType.CLICK, callback2, target);
-                } else {
-                    button2Node.once(Button.EventType.CLICK, this.onTouch, this);
                 }
 
                 let label = button2Node.getChildByName('Label').getComponent(Label);
@@ -185,11 +248,16 @@ export class GameMain extends Component {
     }
 
     dismissDialog() {
+        let button1Node = this.dialogNode.getChildByName('Button1');
+        let button2Node = this.dialogNode.getChildByName('Button2');
+        button1Node.off(Button.EventType.CLICK);
+        button2Node.off(Button.EventType.CLICK);
         this.dialogNode.active = false;
     }
 
     gameOver() {
-        this.showDialog("你倒在路边，再也没有站起来。", this, "领盒饭", this.backHome);
+        this.showPlayerUI();
+        this.showDialog(`<color=#ff0000>你倒在路边，再也没有站起来。Game Over!</color>`, this, "领盒饭", this.backHome);
     }
 }
 

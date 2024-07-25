@@ -27,8 +27,10 @@ export default class DataManager extends Singleton {
         if (l > 1) {
             this.gameInfo.records.pop();
             let stage = this.gameInfo.records[this.gameInfo.records.length - 1];
+            // 同步前一天的人物数据
             this.gameInfo.npcs = stage.npcs;
             this.gameInfo.player = stage.player;
+            // 只保留前一天的主场景事件
             const event = stage.events[0];
             stage.events = new Array();
             stage.events.push(event);
@@ -41,6 +43,10 @@ export default class DataManager extends Singleton {
 
     addHp(hp: number) {
         this.gameInfo.player.hp += hp;
+    }
+
+    addGoodness(goodness: number) {
+        this.gameInfo.player.goodness += goodness;
     }
 
     appendWorkEvent(dayIndex: number) {
@@ -64,5 +70,29 @@ export default class DataManager extends Singleton {
         stage.npcs = bak;
 
         this.gameInfo.records.push(stage);
+    }
+
+    appendHangOutEvent(dayIndex: number) {
+        this.gameInfo.records.forEach(v => {
+            if (v.index == dayIndex) {
+                v.events.push(DataHelper.makeHangOutEvent());
+            }
+        });
+    }
+
+    appendPickMoneyEvent(dayIndex: number) {
+        this.gameInfo.records.forEach(v => {
+            if (v.index == dayIndex) {
+                v.events.push(DataHelper.makePickMoneyEvent());
+            }
+        });
+    }
+
+    appendHurtEvent(dayIndex: number) {
+        this.gameInfo.records.forEach(v => {
+            if (v.index == dayIndex) {
+                v.events.push(DataHelper.makeHurtEvent());
+            }
+        });
     }
 }

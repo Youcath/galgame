@@ -29,21 +29,21 @@ export class NpcInfo {
     }
 }
 
-// 事件信息，不同的UI都对应不同的一个事件，界面显示可以根据该信息完整确定
-export interface GameEventInfo {
+// 场景信息，不同的UI都对应不同的一个事件，界面显示可以根据该信息完整确定
+export interface StageInfo {
     eventType: EventType;
     npc: NpcInfo;
     textInfo: Array<string>;   // 场景介绍的文案
     finalText: Array<string>; // 用于展示场景的结果
 }
 
-// 场景信息，以天/回合为单位，作为可以回退的基本单位
+// 日程信息，以天/回合为单位，作为可以回退的基本单位
 // 有确定的事件信息
-export interface StageInfo {
+export interface DayInfo {
     index: number;  // 第几天，从1开始
     player: PlayerInfo; // 这天开始时的玩家数据
     npcs: Array<NpcInfo>; // 这天开始时的NPC数据
-    events: GameEventInfo[];
+    events: StageInfo[];
 }
 
 // 具体事件类型
@@ -54,8 +54,7 @@ export enum EventType {
     HANGOUT = "hangout",    // 闲逛事件，准备随机遭遇
 
     PICK_MONEY = "pickMoney",  // 捡钱事件
-    SICK = "sick",  // 生病事件
-    HURT = "hurt", // 受伤事件
+    HURT = "hurt",  // 减少健康事件
 
     MEET_NPC = "meetNpc", // 偶遇NPC
 
@@ -63,8 +62,8 @@ export enum EventType {
 }
 
 
-// 每个操作周期的记录信息
-export type IRecord = StageInfo;
+// 每个操作周期(天)的记录信息
+export type IRecord = DayInfo;
 
 // 游戏进程记录信息
 export interface GameInfo {

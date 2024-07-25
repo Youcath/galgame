@@ -5,7 +5,7 @@ import EventManager from "../runtime/EventManager";
 import { BasicStage } from "./BasicStage";
 
 
-export class WorkStage extends BasicStage {
+export class HurtStage extends BasicStage {
     makeStageUI() {
         EventManager.Instance.emit(EVENT_ENUM.SHOW_PLAYER);
         EventManager.Instance.emit(EVENT_ENUM.CLEAR_BUTTONS);
@@ -24,12 +24,21 @@ export class WorkStage extends BasicStage {
     settleAcount() {
         EventManager.Instance.emit(EVENT_ENUM.SHOW_INFORMATION, this.stageInfo.finalText[0]);
 
-        let damage = Math.round(0.5 + Math.random() * 2); // 损失的健康值  1~2
-        let money = Math.round(3 + Math.random() * 7); // 赚的钱 3 ~ 10
-
-        let text = `今天赚到${money}，但消耗了${damage}健康。`;
-        EventManager.Instance.emit(EVENT_ENUM.SHOW_DIALOG, text, this, "收下", this.toNextDay);
-        DataManager.Instance.addMoney(money);
+        let damage = 1; // 损失的健康值  1~5
+        let text = '';
+        
+        if (this.stageInfo.textInfo.length <= 3) {
+            // 生病
+            damage = Math.round(0.6 + Math.random() * 2) // 1 ~ 3
+            text = `损失了${damage}健康，还花了医药费2。`;
+            DataManager.Instance.addMoney(-2);
+        } else {
+            // 受伤
+            damage = Math.round(2.6 + Math.random() * 2) // 3 ~ 5
+            text = `损失了${damage}健康。`;
+        }
+        
+        EventManager.Instance.emit(EVENT_ENUM.SHOW_DIALOG, text, this, "回家", this.toNextDay);
         DataManager.Instance.addHp(-damage);
     }
 
@@ -44,5 +53,4 @@ export class WorkStage extends BasicStage {
         this.reset();
     }
 }
-
 

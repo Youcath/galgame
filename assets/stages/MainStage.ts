@@ -1,4 +1,4 @@
-import { GameEventInfo, StageInfo } from "../data";
+import { DayInfo, StageInfo } from "../data";
 import { EVENT_ENUM } from "../enum";
 import EventManager from "../runtime/EventManager";
 import { Button, Label } from "cc";
@@ -11,13 +11,13 @@ export class MainStage extends BasicStage {
         EventManager.Instance.emit(EVENT_ENUM.SHOW_PLAYER);
         EventManager.Instance.emit(EVENT_ENUM.CLEAR_BUTTONS);
 
-        EventManager.Instance.emit(EVENT_ENUM.SHOW_INFORMATION, this.eventInfo.textInfo[this.infoIdx]);
+        EventManager.Instance.emit(EVENT_ENUM.SHOW_INFORMATION, this.stageInfo.textInfo[this.infoIdx]);
     }
 
     performClick() {
-        if (++this.infoIdx < this.eventInfo.textInfo.length) {
-            EventManager.Instance.emit(EVENT_ENUM.SHOW_INFORMATION, this.eventInfo.textInfo[this.infoIdx]);
-        } else if (this.infoIdx == this.eventInfo.textInfo.length) {
+        if (++this.infoIdx < this.stageInfo.textInfo.length) {
+            EventManager.Instance.emit(EVENT_ENUM.SHOW_INFORMATION, this.stageInfo.textInfo[this.infoIdx]);
+        } else if (this.infoIdx == this.stageInfo.textInfo.length) {
             // 文字展示完毕，可以展示按钮了
             this.appearButtons();
         }
@@ -37,13 +37,16 @@ export class MainStage extends BasicStage {
 
     clickWork(b: Button) {
         console.log("ytyt clickWork");
-        DataManager.Instance.appendWorkEvent(this.stageInfo.index);
+        DataManager.Instance.appendWorkEvent(this.dayInfo.index);
         EventManager.Instance.emit(EVENT_ENUM.SWITCH_STAGE);
         this.reset();
     }
 
     clickHangOut(b: Button) {
         console.log("ytyt clickHangOut");
+        DataManager.Instance.appendHangOutEvent(this.dayInfo.index);
+        EventManager.Instance.emit(EVENT_ENUM.SWITCH_STAGE);
+        this.reset();
     }
 
     clickContact(b: Button) {

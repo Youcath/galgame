@@ -3,6 +3,8 @@ export enum EVENT_ENUM {
     SHOW_PLAYER = "showPlayer",
     SHOW_NPC = "showNpc",
     SHOW_INFORMATION = "showInformation",
+    COMPARE_GOODNESS = "compareGoodness",
+    COMPARE_GOODWILL = "compareGoodwill",
     UPDATE_DAY = "updateDay",
     SWITCH_STAGE = "switchStage",
     CLEAR_BUTTONS = "clearButtons",

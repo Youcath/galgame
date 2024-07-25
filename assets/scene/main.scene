@@ -4105,8 +4105,8 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 419.9999999999999,
-      "height": 50.400000000000034
+      "width": 420,
+      "height": 50.400000000000006
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -4127,10 +4127,10 @@
     "__prefab": null,
     "_alignFlags": 45,
     "_target": null,
-    "_left": 0.058035416666666804,
-    "_right": 32.14300000000003,
-    "_top": 41.317999999999984,
-    "_bottom": 108.28199999999998,
+    "_left": 0.058035416666666687,
+    "_right": 32.14299999999997,
+    "_top": 41.318,
+    "_bottom": 108.282,
     "_horizontalCenter": 0,
     "_verticalCenter": 0,
     "_isAbsLeft": false,
@@ -4156,7 +4156,7 @@
     "_enabled": true,
     "__prefab": null,
     "_lineHeight": 40,
-    "_string": "Are You Sure？",
+    "_string": "<color=#ff0000>Game Over!</color>",
     "_horizontalAlign": 0,
     "_verticalAlign": 0,
     "_fontSize": 36,
@@ -4292,7 +4292,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 120,
+      "width": 160,
       "height": 40
     },
     "_anchorPoint": {
@@ -4376,8 +4376,8 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 150,
-      "height": 60
+      "width": 200,
+      "height": 40
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -4604,7 +4604,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 120,
+      "width": 160,
       "height": 40
     },
     "_anchorPoint": {
@@ -4688,8 +4688,8 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 150,
-      "height": 60
+      "width": 200,
+      "height": 40
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",

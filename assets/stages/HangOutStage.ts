@@ -1,48 +1,45 @@
-
 import { EVENT_ENUM } from "../enum";
 import DataManager from "../runtime/DataManager";
 import EventManager from "../runtime/EventManager";
 import { BasicStage } from "./BasicStage";
 
-
-export class WorkStage extends BasicStage {
-    makeStageUI() {
+export class HangOutStage extends BasicStage {
+    makeStageUI(): void {
         EventManager.Instance.emit(EVENT_ENUM.SHOW_PLAYER);
         EventManager.Instance.emit(EVENT_ENUM.CLEAR_BUTTONS);
 
         EventManager.Instance.emit(EVENT_ENUM.SHOW_INFORMATION, this.stageInfo.textInfo[this.infoIdx]);
     }
 
-    performClick() {
+    performClick(): void {
         if (++this.infoIdx < this.stageInfo.textInfo.length) {
             EventManager.Instance.emit(EVENT_ENUM.SHOW_INFORMATION, this.stageInfo.textInfo[this.infoIdx]);
         } else if (this.infoIdx == this.stageInfo.textInfo.length) {
-            this.settleAcount();
+            this.prepareNextEvent();
         }
     }
 
-    settleAcount() {
+    private prepareNextEvent() {
         EventManager.Instance.emit(EVENT_ENUM.SHOW_INFORMATION, this.stageInfo.finalText[0]);
+        let money = Math.round(2 + Math.random() * 3); // 花销 2 ~ 5
 
-        let damage = Math.round(0.5 + Math.random() * 2); // 损失的健康值  1~2
-        let money = Math.round(3 + Math.random() * 7); // 赚的钱 3 ~ 10
-
-        let text = `今天赚到${money}，但消耗了${damage}健康。`;
-        EventManager.Instance.emit(EVENT_ENUM.SHOW_DIALOG, text, this, "收下", this.toNextDay);
-        DataManager.Instance.addMoney(money);
-        DataManager.Instance.addHp(-damage);
+        let text = `今天吃饭花掉${money}。`;
+        EventManager.Instance.emit(EVENT_ENUM.SHOW_DIALOG, text, this, "走吧", this.toNextStage);
+        DataManager.Instance.addMoney(-money);
     }
 
-    toNextDay() {
+    toNextStage() {
         EventManager.Instance.emit(EVENT_ENUM.DISMISS_DIALOG);
-        if (DataManager.Instance.gameInfo.player.hp <= 0) {
-            EventManager.Instance.emit(EVENT_ENUM.GAME_OVER);
-            return;
+
+        let r = Math.random();
+        if (r < 0.5) {
+            // 意外受伤
+            DataManager.Instance.appendHurtEvent(this.dayInfo.index);
+        } else {
+            // 意外捡钱
+            DataManager.Instance.appendPickMoneyEvent(this.dayInfo.index);
         }
-        DataManager.Instance.appendNewDay();
         EventManager.Instance.emit(EVENT_ENUM.SWITCH_STAGE);
         this.reset();
     }
 }
-
-

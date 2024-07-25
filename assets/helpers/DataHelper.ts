@@ -1,11 +1,11 @@
 
-import { EventType, GameEventInfo, GameInfo, NpcInfo, PlayerInfo, StageInfo } from "../data"
+import { EventType, DayInfo, GameInfo, NpcInfo, PlayerInfo, StageInfo } from "../data"
 
 // 用于构造各种详细数据，需要尽量改造成可配置的形式
 export class DataHelper {
     static makeBeginningGame(): GameInfo {
 
-        let firstStage: StageInfo = {
+        let firstDay: DayInfo = {
             index: 1,
             player: this.newBeginningPlayer(),
             npcs: this.newBeginningNpcs(),
@@ -14,7 +14,7 @@ export class DataHelper {
         return {
             player: this.newBeginningPlayer(),
             npcs: this.newBeginningNpcs(),
-            records: [firstStage]
+            records: [firstDay]
         };
     }
 
@@ -26,7 +26,7 @@ export class DataHelper {
         return [new NpcInfo("Alice", 0)];
     }
 
-    static makeFirstMainEvent(): GameEventInfo {
+    static makeFirstMainEvent(): StageInfo {
         return {
             eventType: EventType.HOME,
             textInfo: ["昨天刚搬到这个小镇，今天要不出去转转。", "今天做些什么呢......."],
@@ -35,7 +35,7 @@ export class DataHelper {
         };
     }
 
-    static makeMainStage(day: number): StageInfo {
+    static makeMainStage(day: number): DayInfo {
         return {
             index: day,
             player: null,
@@ -49,7 +49,7 @@ export class DataHelper {
         };
     }
 
-    static makeWorkEvent(): GameEventInfo {
+    static makeWorkEvent(): StageInfo {
         let r = Math.random();
         if (r < 0.5) {
             return {
@@ -66,9 +66,65 @@ export class DataHelper {
                 npc: null
             };
         }
-
     }
 
+    static makeHangOutEvent(): StageInfo {
+        let r = Math.random();
+        if (r < 0.5) {
+            return {
+                eventType: EventType.HANGOUT,
+                textInfo: ["去商场转转", "人来人往，好像没人注意到我", "在凳子上坐了很久"],
+                finalText: ["一抬头，出现在眼前的是......"],
+                npc: null
+            };
+        } else {
+            return {
+                eventType: EventType.HANGOUT,
+                textInfo: ["去走街窜巷", "人来人往，好像没人注意到我", "晃荡了半天"],
+                finalText: ["下个路口出现在眼前的是......"],
+                npc: null
+            };
+        }
+    }
+
+    
+    static makePickMoneyEvent(): StageInfo {
+        let r = Math.random();
+        if (r < 0.5) {
+            return {
+                eventType: EventType.PICK_MONEY,
+                textInfo: ["楼梯的角落发现一沓钞票", "迅速走过去踩在脚底"],
+                finalText: ["这钱怎么处理呢......"],
+                npc: null
+            };
+        } else {
+            return {
+                eventType: EventType.PICK_MONEY,
+                textInfo: ["天上飘来一张纸片，掉在了我的领口里", "拿出来一看，居然是一张钞票", "身边好像没人注意到"],
+                finalText: ["这钱怎么处理呢......"],
+                npc: null
+            };
+        }
+    }
+
+    static makeHurtEvent(): StageInfo {
+        let r = Math.random();
+        if (r < 0.5) {
+            return {
+                eventType: EventType.HURT,
+                textInfo: ["突然感到一阵晕眩", "被人送到了医院", "......"],
+                finalText: ["居然染上了不知名的病症"],
+                npc: null
+            };
+        } else {
+            return {
+                eventType: EventType.HURT,
+                textInfo: ["突然脑袋一阵剧痛", "倒在了地上，就断片了。", "醒来就在医院病床上", "......"],
+                finalText: ["被高空抛物砸到了，幸好对方赔偿了医药费。"],
+                npc: null
+            };
+        }
+    }
 }
 
 
