@@ -51,6 +51,7 @@ export class GameMain extends Component {
     rollbackToYesterday() {
         console.log("ytyt rollback To Yesterday!");
         DataManager.Instance.rollbackRecord();
+        StageManager.reset();
         this.makeStage();
     }
 

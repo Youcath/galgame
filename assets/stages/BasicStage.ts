@@ -16,6 +16,8 @@ export abstract class BasicStage {
         this.stageInfo = null;
         this.eventInfo = null;
         this.infoIdx = 0;
+
+        console.log("reset " + this);
     }
     abstract makeStageUI(): void;
 

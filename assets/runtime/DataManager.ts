@@ -1,5 +1,5 @@
 import Singleton from "../base/Singleton";
-import { GameInfo } from "../data";
+import { GameInfo, NpcInfo } from "../data";
 import { DataHelper } from "../helpers/DataHelper";
 
 /**
@@ -24,7 +24,15 @@ export default class DataManager extends Singleton {
     // 丢掉最新的record
     rollbackRecord() {
         let l = this.gameInfo.records.length;
-        this.gameInfo.records.splice(l - 1, 1);
+        if (l > 1) {
+            this.gameInfo.records.pop();
+            let stage = this.gameInfo.records[this.gameInfo.records.length - 1];
+            this.gameInfo.npcs = stage.npcs;
+            this.gameInfo.player = stage.player;
+            const event = stage.events[0];
+            stage.events = new Array();
+            stage.events.push(event);
+        }
     }
 
     addMoney(money: number) {
@@ -48,8 +56,12 @@ export default class DataManager extends Singleton {
         // 天数增加一天
         let stage = DataHelper.makeMainStage(l + 1);
         // 备份当前人物信息
-        stage.player = this.gameInfo.player;
-        stage.npcs = this.gameInfo.npcs;
+        stage.player = this.gameInfo.player.clone();
+        let bak = new Array<NpcInfo>()
+        this.gameInfo.npcs.forEach(v => {
+            bak.push(v.clone());
+        });
+        stage.npcs = bak;
 
         this.gameInfo.records.push(stage);
     }

@@ -16,7 +16,7 @@ export class WorkStage extends BasicStage {
     performClick() {
         if (++this.infoIdx < this.eventInfo.textInfo.length) {
             EventManager.Instance.emit(EVENT_ENUM.SHOW_INFORMATION, this.eventInfo.textInfo[this.infoIdx]);
-        } else {
+        } else if (this.infoIdx == this.eventInfo.textInfo.length) {
             this.settleAcount();
         }
     }

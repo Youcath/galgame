@@ -1,3 +1,4 @@
+import { editorExtrasTag } from "cc";
 import { EventType, GameEventInfo, StageInfo } from "../data";
 import { EVENT_ENUM } from "../enum";
 import EventManager from "../runtime/EventManager";
@@ -10,8 +11,8 @@ export class StageManager {
     private static stageMap: Map<EventType, BasicStage>;
     static {
         StageManager.stageMap = new Map<EventType, BasicStage>();
-        StageManager.stageMap[EventType.HOME] = new MainStage();
-        StageManager.stageMap[EventType.WORKING] = new WorkStage();
+        StageManager.stageMap.set(EventType.HOME, new MainStage());
+        StageManager.stageMap.set(EventType.WORKING, new WorkStage());
     }
     static makeStage(stage: StageInfo) {
         if (!stage || stage.events.length <= 0) {
@@ -21,8 +22,8 @@ export class StageManager {
         EventManager.Instance.emit(EVENT_ENUM.UPDATE_DAY, stage.index);
 
         let eventInfo = stage.events[stage.events.length - 1];
-        StageManager.stageMap[eventInfo.eventType].init(stage, eventInfo);
-        StageManager.stageMap[eventInfo.eventType].makeStageUI();
+        StageManager.stageMap.get(eventInfo.eventType).init(stage, eventInfo);
+        StageManager.stageMap.get(eventInfo.eventType).makeStageUI();
 
     }
 
@@ -32,8 +33,13 @@ export class StageManager {
         }
         
         let eventInfo = stageInfo.events[stageInfo.events.length - 1];
-        let stage = StageManager.stageMap[eventInfo.eventType] as BasicStage;
-        stage.performClick();
+        StageManager.stageMap.get(eventInfo.eventType).performClick();
+    }
+
+    static reset() {
+        StageManager.stageMap.forEach((v, k) => {
+            v.reset();
+        });
     }
 }
 

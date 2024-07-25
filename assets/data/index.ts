@@ -3,11 +3,30 @@ export class PlayerInfo {
     hp: number; // 血量
     money: number; // 钱
     goodness: number; // 善恶值
+
+    constructor(hp: number, money: number, goodness: number) {
+        this.hp = hp;
+        this.money = money;
+        this.goodness = goodness;
+    }
+
+    clone(): PlayerInfo {
+        return new PlayerInfo(this.hp, this.money, this.goodness);
+    }
 }
 
 export class NpcInfo {
     name: string;
     goodwill: number; // 好感度
+
+    constructor(name: string, goodwill: number) {
+        this.name = name;
+        this.goodwill = goodwill;
+    }
+
+    clone(): NpcInfo {
+        return new NpcInfo(this.name, this.goodwill);
+    }
 }
 
 // 事件信息，不同的UI都对应不同的一个事件，界面显示可以根据该信息完整确定
